@@ -77,6 +77,7 @@
       <label>Samples/degree <input id="rawdotpdeg" type="text" value="" readonly disabled/></label>
       <label>Shannon's law samples/degree <input id="dotpdeg" type="text" value="" readonly disabled/></label>
       <label>720p 16:9 pixel/degree <input id="pixelpdeg720" type="text" value="" readonly disabled/></label>
+      <label>900p 16:9 pixel/degree <input id="pixelpdeg900" type="text" value="" readonly disabled/></label>
       <label>1080p 16:9 pixel/degree <input id="pixelpdeg1080" type="text" value="" readonly disabled/></label>
       <label>1440p 16:9 pixel/degree <input id="pixelpdeg1440" type="text" value="" readonly disabled/></label>
       <label>2160p 16:9 pixel/degree <input id="pixelpdeg2160" type="text" value="" readonly disabled/></label>
@@ -99,6 +100,7 @@
         var rawdotpdeg = dpi * inchp360 / 360;
         var dotpdeg = rawdotpdeg / 2;
         var pixelpdeg720 = (16 * 720 / 9) / fov;
+        var pixelpdeg900 = (16 * 900 / 9) / fov;
         var pixelpdeg1080 = (16 * 1080 / 9) / fov;
         var pixelpdeg1440 = (16 * 1440 / 9) / fov;
         var pixelpdeg2160 = (16 * 2160 / 9) / fov;
@@ -109,18 +111,21 @@
         document.getElementById("rawdotpdeg").value = roundTwoPlaces(rawdotpdeg);
         document.getElementById("dotpdeg").value = roundTwoPlaces(dotpdeg);
         document.getElementById("pixelpdeg720").value = roundTwoPlaces(pixelpdeg720);
+        document.getElementById("pixelpdeg900").value = roundTwoPlaces(pixelpdeg900);
         document.getElementById("pixelpdeg1080").value = roundTwoPlaces(pixelpdeg1080);
         document.getElementById("pixelpdeg1440").value = roundTwoPlaces(pixelpdeg1440);
         document.getElementById("pixelpdeg2160").value = roundTwoPlaces(pixelpdeg2160);
         document.getElementById("pixelpdeg108021by9").value = roundTwoPlaces(pixelpdeg108021by9);
 
         document.getElementById("pixelpdeg720").className = "";
+        document.getElementById("pixelpdeg900").className = "";
         document.getElementById("pixelpdeg1080").className = "";
         document.getElementById("pixelpdeg1440").className = "";
         document.getElementById("pixelpdeg2160").className = "";
         document.getElementById("pixelpdeg108021by9").className = "";
 
         document.getElementById("pixelpdeg720").className = pixelpdeg720 > dotpdeg ? "error" : "pass";
+        document.getElementById("pixelpdeg900").className = pixelpdeg900 > dotpdeg ? "error" : "pass";
         document.getElementById("pixelpdeg1080").className = pixelpdeg1080 > dotpdeg ? "error" : "pass";
         document.getElementById("pixelpdeg1440").className = pixelpdeg1440 > dotpdeg ? "error" : "pass";
         document.getElementById("pixelpdeg2160").className = pixelpdeg2160 > dotpdeg ? "error" : "pass";
