@@ -34,30 +34,30 @@
     </p>
     <p>
       Imagine in the extreme case where a DPI hipster plays using 1 DPI and hacks in-game sensitivity to allow
-      the sensitivity to be set to 4000. This actually results in a very competitive 34.64 cm/360°, but reticle
+      the sensitivity to be set to 4000. This actually results in a very competitive 34.64 cm/360°, but the reticle
       will be skipping by 26.4° at a time!  The DPI hipster will not be able to hit anything.
     </p>
     <p>
-      How much DPI does one need? What is enough DPI such that the reticle can be places anywhere on the screen?
-      This depends a few factors, DPI, in-game sensitiviy, FOV, screen resolution, and screen ratio.
+      How much DPI does one need? What is enough DPI such that the reticle can be placed anywhere on the screen?
+      This depends a few factors: DPI, in-game sensitivity, FOV, screen resolution, and screen ratio.
     </p>
     <p>
-      This tool will calculate if a given DPI, in-game sensitiviy, and FOV is good enough for various screen sizes.
+      This tool will calculate if a given DPI, in-game sensitivity, and FOV is good enough for various screen sizes.
     </p>
     <p>
-      The key thing to figure out is for a given DPI, in-game sensitiviy, and FOV, how many samples per degree does that
-      that result in.  This the overall sampling rate of the mouse.  This is then compared to the actual resolution
-      of various monitors.  If sampling rate is 2x of the resolution of the monitor for a single degree, this means
-      the settings is enough to reach any part of the monitor.
+      The key thing to figure out is for a given DPI, in-game sensitivity, and FOV, how many samples per degree does that
+      that result in.  This is the overall sampling rate of the mouse, which is then compared to the actual resolution
+      of various monitors.  If the sampling rate is 2x of the resolution of the monitor for a single degree, this means
+      the settings are enough to reach any part of the monitor.
     </p>
     <p>
       The sampling rate has to be 2x of the resolution due to
-      <a href="https://en.wikipedia.org/wiki/Shannon–Hartley_theorem">Shannon's law</a>. For our purposes this effective
-      halfs the calculated sample/degree.
+      <a href="https://en.wikipedia.org/wiki/Shannon–Hartley_theorem">Shannon's law</a>. For our purposes this effectively
+      halves the calculated sample/degree.
     </p>
     <p>
-      To use this tool enter your DPI, in-game sensitiviy, and FOV, then find your screen resolution.  If
-      Shannon's law sample/degree is greater than your screen's pixel/degree, then it passes with blue, otherwise
+      To use this tool enter your DPI, in-game sensitivity, and FOV, then find your screen resolution.  If
+      Shannon's law sample/degree is greater than your screen's pixel/degree then it passes with blue, otherwise
       it fails with red.
     </p>
     <p>
@@ -66,7 +66,7 @@
     <h2>Inputs</h2>
     <div class="container">
       <label>DPI <input id="dpi" type="text" value="400" onkeyup="calculate()"/></label>
-      <label>In-game sensitivity <input id="sensitvity" type="text" value="10" onkeyup="calculate()"/></label>
+      <label>In-game sensitivity <input id="sensitivity" type="text" value="10" onkeyup="calculate()"/></label>
       <label>FOV <input id="fov" type="text" value="103" onkeyup="calculate()"/></label>
     </div>
     <hr/>
@@ -92,10 +92,10 @@
 
       function calculate() {
         var dpi = Number(document.getElementById("dpi").value);
-        var sensitvity = Number(document.getElementById("sensitvity").value);
+        var sensitivity = Number(document.getElementById("sensitivity").value);
         var fov = Number(document.getElementById("fov").value);
 
-        var inchp360 = (360 * 10 / 3) / (dpi * sensitvity * 0.022);
+        var inchp360 = (360 * 10 / 3) / (dpi * sensitivity * 0.022);
         var cmp360 = 2.54 * inchp360;
         var rawdotpdeg = dpi * inchp360 / 360;
         var dotpdeg = rawdotpdeg / 2;
