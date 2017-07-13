@@ -79,24 +79,33 @@
     </div>
 
     <script type="text/javascript">
-      var factors = {
-        "1280x720": { "width": 1280, "height": 720, "factor": 16/9 },
-        "1440x900": { "width": 1440, "height": 900, "factor": 16/10 },
-        "1600x900": { "width": 1600, "height": 900, "factor": 16/9 },
-        "1680x1050": { "width": 1680, "height": 1050, "factor": 16/10 },
-        "1920x1080": { "width": 1920, "height": 1080, "factor": 16/9 },
-        "2560x1080": { "width": 2560, "height": 1080, "factor": 64/27 },
-        "2560x1440": { "width": 2560, "height": 1440, "factor": 16/9 },
-        "3440x1440": { "width": 2560, "height": 1080, "factor": 64/27 },
-        "3840x2160": { "width": 3840, "height": 2160, "factor": 16/9 }
-      };
+      var resolutions = [
+        {"width": 1280, "height": 720},
+        {"width": 1440, "height": 900},
+        {"width": 1600, "height": 900},
+        {"width": 1680, "height": 1050},
+        {"width": 1920, "height": 1080},
+        {"width": 2560, "height": 1080},
+        {"width": 2560, "height": 1440},
+        {"width": 2560, "height": 1080},
+        {"width": 3840, "height": 2160}
+      ];
 
-      function populate_rez() {
-        var out = document.getElementById("outputs");
-        Object.keys(factors).forEach(function(rez) {
+      var factors = {};
+      resolutions.forEach(function(resolution) {
+        factors[resolution.width + "x" + resolution.height] = {
+          width: resolution.width,
+          height: resolution.height,
+          ratio: resolution.width/resolution.height
+        };
+      });
+
+      function createOutputs() {
+        var outputs = document.getElementById("outputs");
+        Object.keys(factors).forEach(function(resolution) {
           var label = document.createElement("label");
-          label.innerHTML = "Pixel/degree @ " + rez + " <input id=" + rez + " type=text readonly disabled/>"
-          out.appendChild(label);
+          label.innerHTML = "Pixel/degree @ " + resolution + " <input id=" + resolution + " type=text readonly disabled/>"
+          outputs.appendChild(label);
         });
       }
 
@@ -119,17 +128,17 @@
         document.getElementById("rawdotpdeg").value = roundTwoPlaces(rawdotpdeg);
         document.getElementById("dotpdeg").value = roundTwoPlaces(dotpdeg);
 
-        Object.keys(factors).forEach(function(rez) {
-          var info = factors[rez];
-          var pixeldeg = info.factor * info.height / fov;
+        Object.keys(factors).forEach(function(resolution) {
+          var factor = factors[resolution];
+          var pixeldeg = factor.ratio * factor.height / fov;
 
-          var outbox = document.getElementById(rez);
-          outbox.value = roundTwoPlaces(pixeldeg);
-          outbox.className = (pixeldeg > dotpdeg) ? "error" : "pass";
+          var output = document.getElementById(resolution);
+          output.value = roundTwoPlaces(pixeldeg);
+          output.className = (pixeldeg > dotpdeg) ? "error" : "pass";
         });
       }
 
-      populate_rez();
+      createOutputs();
       calculate();
     </script>
   </body>
