@@ -71,20 +71,34 @@
     </div>
     <hr/>
     <h2>Outputs</h2>
-    <div class="container">
+    <div class="container" id="outputs">
       <label>Inch/360° <input id="inchp360" type="text" value="" readonly disabled/></label>
       <label>CM/360° <input id="cmp360" type="text" value="" readonly disabled/></label>
       <label>Samples/degree <input id="rawdotpdeg" type="text" value="" readonly disabled/></label>
       <label>Shannon's law samples/degree <input id="dotpdeg" type="text" value="" readonly disabled/></label>
-      <label>720p 16:9 pixel/degree <input id="pixelpdeg720" type="text" value="" readonly disabled/></label>
-      <label>900p 16:9 pixel/degree <input id="pixelpdeg900" type="text" value="" readonly disabled/></label>
-      <label>1080p 16:9 pixel/degree <input id="pixelpdeg1080" type="text" value="" readonly disabled/></label>
-      <label>1440p 16:9 pixel/degree <input id="pixelpdeg1440" type="text" value="" readonly disabled/></label>
-      <label>2160p 16:9 pixel/degree <input id="pixelpdeg2160" type="text" value="" readonly disabled/></label>
-      <label>1080p 21:9 pixel/degree <input id="pixelpdeg108021by9" type="text" value="" readonly disabled/></label>
     </div>
 
     <script type="text/javascript">
+      var factors = {
+        "1280x720": { "width": 1280, "height": 720, "factor": 16/9 },
+        "1440x900": { "width": 1440, "height": 900, "factor": 16/10 },
+        "1600x900": { "width": 1600, "height": 900, "factor": 16/9 },
+        "1680x1050": { "width": 1680, "height": 1050, "factor": 16/10 },
+        "1920x1080": { "width": 1920, "height": 1080, "factor": 16/9 },
+        "2560x1080": { "width": 2560, "height": 1080, "factor": 64/27 },
+        "2560x1440": { "width": 2560, "height": 1440, "factor": 16/9 },
+        "3440x1440": { "width": 2560, "height": 1080, "factor": 64/27 },
+        "3840x2160": { "width": 3840, "height": 2160, "factor": 16/9 }
+      };
+
+      function populate_rez() {
+        var out = document.getElementById("outputs");
+        Object.keys(factors).forEach(function(rez) {
+          var label = document.createElement("label");
+          label.innerHTML = "Pixel/degree @ " + rez + " <input id=" + rez + " type=text readonly disabled/>"
+          out.appendChild(label);
+        });
+      }
 
       function roundTwoPlaces(number) {
         return Math.round(100 * number) / 100;
@@ -99,39 +113,23 @@
         var cmp360 = 2.54 * inchp360;
         var rawdotpdeg = dpi * inchp360 / 360;
         var dotpdeg = rawdotpdeg / 2;
-        var pixelpdeg720 = (16 * 720 / 9) / fov;
-        var pixelpdeg900 = (16 * 900 / 9) / fov;
-        var pixelpdeg1080 = (16 * 1080 / 9) / fov;
-        var pixelpdeg1440 = (16 * 1440 / 9) / fov;
-        var pixelpdeg2160 = (16 * 2160 / 9) / fov;
-        var pixelpdeg108021by9 = (64 * 1080 / 27) / fov;
 
         document.getElementById("inchp360").value = roundTwoPlaces(inchp360);
         document.getElementById("cmp360").value = roundTwoPlaces(cmp360);
         document.getElementById("rawdotpdeg").value = roundTwoPlaces(rawdotpdeg);
         document.getElementById("dotpdeg").value = roundTwoPlaces(dotpdeg);
-        document.getElementById("pixelpdeg720").value = roundTwoPlaces(pixelpdeg720);
-        document.getElementById("pixelpdeg900").value = roundTwoPlaces(pixelpdeg900);
-        document.getElementById("pixelpdeg1080").value = roundTwoPlaces(pixelpdeg1080);
-        document.getElementById("pixelpdeg1440").value = roundTwoPlaces(pixelpdeg1440);
-        document.getElementById("pixelpdeg2160").value = roundTwoPlaces(pixelpdeg2160);
-        document.getElementById("pixelpdeg108021by9").value = roundTwoPlaces(pixelpdeg108021by9);
 
-        document.getElementById("pixelpdeg720").className = "";
-        document.getElementById("pixelpdeg900").className = "";
-        document.getElementById("pixelpdeg1080").className = "";
-        document.getElementById("pixelpdeg1440").className = "";
-        document.getElementById("pixelpdeg2160").className = "";
-        document.getElementById("pixelpdeg108021by9").className = "";
+        Object.keys(factors).forEach(function(rez) {
+          var info = factors[rez];
+          var pixeldeg = info.factor * info.height / fov;
 
-        document.getElementById("pixelpdeg720").className = pixelpdeg720 > dotpdeg ? "error" : "pass";
-        document.getElementById("pixelpdeg900").className = pixelpdeg900 > dotpdeg ? "error" : "pass";
-        document.getElementById("pixelpdeg1080").className = pixelpdeg1080 > dotpdeg ? "error" : "pass";
-        document.getElementById("pixelpdeg1440").className = pixelpdeg1440 > dotpdeg ? "error" : "pass";
-        document.getElementById("pixelpdeg2160").className = pixelpdeg2160 > dotpdeg ? "error" : "pass";
-        document.getElementById("pixelpdeg108021by9").className = pixelpdeg108021by9 > dotpdeg ? "error" : "pass";
+          var outbox = document.getElementById(rez);
+          outbox.value = roundTwoPlaces(pixeldeg);
+          outbox.className = (pixeldeg > dotpdeg) ? "error" : "pass";
+        });
       }
 
+      populate_rez();
       calculate();
     </script>
   </body>
