@@ -1,145 +1,301 @@
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Overwatch DPI Tool</title>
-    <style>
-      .container {
-        display: flex;
-        flex-direction: column;
-        width: 300px;
-        align-items: flex-end;
-      }
 
-      input {
-        width: 60px;
-      }
+<head>
+  <meta charset="UTF-8">
+  <title>Overwatch DPI Tool</title>
+  <style>
 
-      .error {
-        background-color: pink;
-      }
+    body {
+      background:url("background.jpeg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      color: rgb(240,240,240);
+      text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+      font-size: 17px;
+    }
 
-      .pass {
-        background-color: skyblue;
-      }
+    body:before {
+        content:"";
+        display:block;
+        position:fixed;
+        width:100%;
+        height:100%;
+        left:0;
+        top:0;
+        z-index:-1;
+        background-color: rgba(60, 60, 60, 0.5);
+    }
 
-      #dotpdeg {
-        border-style: double;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Overwatch DPI Tool</h1>
-    <p>
-      Low DPI can cause a reticle to skip over hitboxes.
-    </p>
-    <p>
-      Imagine in the extreme case where a DPI hipster plays using 1 DPI and hacks in-game sensitivity to allow
-      the sensitivity to be set to 4000. This actually results in a very competitive 34.64 cm/360°, but the reticle
-      will be skipping by 26.4° at a time!  The DPI hipster will not be able to hit anything.
-    </p>
-    <p>
-      How much DPI does one need? What is enough DPI such that the reticle can be placed anywhere on the screen?
-      This depends a few factors: DPI, in-game sensitivity, FOV, screen resolution, and screen ratio.
-    </p>
-    <p>
-      This tool will calculate if a given DPI, in-game sensitivity, and FOV is good enough for various screen sizes.
-    </p>
-    <p>
-      The key thing to figure out is for a given DPI, in-game sensitivity, and FOV, how many samples per degree does that
-      that result in.  This is the overall sampling rate of the mouse, which is then compared to the actual resolution
-      of various monitors.  If the sampling rate is 2x of the resolution of the monitor for a single degree, this means
-      the settings are enough to reach any part of the monitor.
-    </p>
-    <p>
-      The sampling rate has to be 2x of the resolution due to
-      <a href="https://en.wikipedia.org/wiki/Shannon–Hartley_theorem">Shannon's law</a>. For our purposes this effectively
-      halves the calculated sample/degree.
-    </p>
-    <p>
-      To use this tool enter your DPI, in-game sensitivity, and FOV, then find your screen resolution.  If
-      Shannon's law sample/degree is greater than your screen's pixel/degree then it passes with blue, otherwise
-      it fails with red.
-    </p>
-    <p>
-      If you have any questions feel free to tweet me <a href="https://twitter.com/pyrolistical">@pyrolistical</a>.
-    </p>
-    <h2>Inputs</h2>
-    <div class="container">
-      <label>DPI <input id="dpi" type="text" value="400" onkeyup="calculate()"/></label>
-      <label>In-game sensitivity <input id="sensitivity" type="text" value="10" onkeyup="calculate()"/></label>
-      <label>FOV <input id="fov" type="text" value="103" onkeyup="calculate()"/></label>
+    a {
+      color: rgb(150,150,255);
+    }
+
+    a:visited {
+      color: hotpink;
+    }
+
+    button {
+      background-color: rgba(150,150,255, 0);
+      color: white;
+      border-color: rgba(150,150,255, 0.5);
+      border-radius: 3px;
+    }
+
+    button:hover {
+      background-color: rgba(150,150,255, 0.2);
+      color: white;
+      border-color: rgba(150,150,255, 0.7);
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      width: 300px;
+      align-items: flex-end;
+    }
+
+    input {
+      width: 60px;
+    }
+
+    .error {
+      background-color: pink;
+    }
+
+    .pass {
+      background-color: skyblue;
+    }
+
+    #total_container {
+      display: grid;
+      grid-template-columns: 50% 50%;
+    }
+
+    #left_container {
+      display: grid;
+    }
+
+    #right_container {
+      display: grid;
+    }
+
+    #button_container {
+      display: grid;
+      grid-template-columns: 50% 50%;
+      height: 30px;
+    }
+
+    #text {
+      top: 50px;
+      position: absolute;
+      align-self: center;
+      margin: 0 auto;
+    }
+
+    #video {
+      visibility: hidden;
+      top: 70px;
+      position: absolute;
+      align-self: center;
+    }
+
+    button.input_buttons {
+      float: right;
+    }
+
+    label {
+      margin: 2px 0;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="total_container">
+    <div id="left_container">
+      <h2>Inputs:</h2>
+      <div class="container">
+        <label>DPI <input id="dpi" type="text" value="400" onkeyup="calculate()"/><button class="input_buttons" onclick="add_DPI(), calculate()" id="DPI_plus_button">+</button><button class="input_buttons" onclick="minus_DPI(), calculate()" id="DPI_minus_button">-</button></label>
+        <label>In-game sensitivity <input id="sensitivity" type="text" value="10" onkeyup="calculate()"/>
+        <button class="input_buttons" onclick="add_IGS(), calculate()" id="IGS_plus_button">+</button><button class="input_buttons" onclick="minus_IGS(), calculate()" id="IGS_minus_button">-</button></label>
+        <label>FOV <input id="fov" type="text" value="103" onkeyup="calculate()"/>
+        <button class="input_buttons" onclick="add_FOV(), calculate()" id="FOV_plus_button">+</button><button class="input_buttons" onclick="minus_FOV(), calculate()" id="FOV_minus_button">-</button></label>
+      </div>
+      <h2>Outputs:</h2>
+      <div class="container" id="outputs">
+        <label>eDPI <input id="eDPI" type="text" value="" readonly disabled/></label>
+        <label>Inch/360° <input id="inchp360" type="text" value="" readonly disabled/></label>
+        <label>CM/360° <input id="cmp360" type="text" value="" readonly disabled/></label>
+        <label>Samples/degree <input id="rawdotpdeg" type="text" value="" readonly disabled/></label>
+        <label>Shannon's law samples/degree <input id="dotpdeg" type="text" value="" readonly disabled/></label>
+      </div>
     </div>
-    <hr/>
-    <h2>Outputs</h2>
-    <div class="container" id="outputs">
-      <label>Inch/360° <input id="inchp360" type="text" value="" readonly disabled/></label>
-      <label>CM/360° <input id="cmp360" type="text" value="" readonly disabled/></label>
-      <label>Samples/degree <input id="rawdotpdeg" type="text" value="" readonly disabled/></label>
-      <label>Shannon's law samples/degree <input id="dotpdeg" type="text" value="" readonly disabled/></label>
+    <div id="right_container">
+      <div id="button_container">
+        <button onclick="show_text()" id="button_text">Text Explanation</button>
+        <button onclick="show_video()" id="button_video">Video Demonstration</button>
+      </div>
+      <div id="text">
+        <h1>Overwatch DPI Tool</h1>
+        <p>
+          Low DPI can cause a reticle to skip over hitboxes.
+        </p>
+        <p>
+          Imagine in the extreme case where a DPI hipster plays using 1 DPI and hacks in-game sensitivity to allow the sensitivity to be set to 4000. This actually results in a very competitive 34.64 cm/360°, but the reticle will be skipping by 26.4° at a time!
+          The DPI hipster will not be able to hit anything.
+        </p>
+        <p>
+          How much DPI does one need? What is enough DPI such that the reticle can be placed anywhere on the screen? This depends a few factors: DPI, in-game sensitivity, FOV, screen resolution, and screen ratio.
+        </p>
+        <p>
+          This tool will calculate if a given DPI, in-game sensitivity, and FOV is good enough for various screen sizes.
+        </p>
+        <p>
+          The key thing to figure out is for a given DPI, in-game sensitivity, and FOV, how many samples per degree does that that result in. This is the overall sampling rate of the mouse, which is then compared to the actual resolution of various monitors. If
+          the sampling rate is 2x of the resolution of the monitor for a single degree, this means the settings are enough to reach any part of the monitor.
+        </p>
+        <p>
+          The sampling rate has to be 2x of the resolution due to
+          <a href="https://en.wikipedia.org/wiki/Shannon–Hartley_theorem">Shannon's law</a>. For our purposes this effectively halves the calculated sample/degree.
+        </p>
+        <p>
+          To use this tool enter your DPI, in-game sensitivity, and FOV, then find your screen resolution. If Shannon's law sample/degree is greater than your screen's pixel/degree then it passes with blue, otherwise it fails with red.
+        </p>
+        <p>
+          If you have any questions feel free to tweet me <a href="https://twitter.com/pyrolistical">@pyrolistical</a>.
+        </p>
+      </div>
+      <div id="video">
+        <iframe width="840" height="472.5" src="https://www.youtube.com/embed/TcjfPKftJBQ" frameborder="0" allow="encrypted-media" allowfullscreen></iframe>
+      </div>
     </div>
+  </div>
 
-    <script type="text/javascript">
-      var resolutions = [
-        {"width": 1280, "height": 720},
-        {"width": 1440, "height": 900},
-        {"width": 1600, "height": 900},
-        {"width": 1680, "height": 1050},
-        {"width": 1920, "height": 1080},
-        {"width": 2560, "height": 1080},
-        {"width": 2560, "height": 1440},
-        {"width": 2560, "height": 1080},
-        {"width": 3840, "height": 2160}
-      ];
+  <script type="text/javascript">
+    var resolutions = [{
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "width": 1440,
+        "height": 900
+      },
+      {
+        "width": 1600,
+        "height": 900
+      },
+      {
+        "width": 1680,
+        "height": 1050
+      },
+      {
+        "width": 1920,
+        "height": 1080
+      },
+      {
+        "width": 2560,
+        "height": 1080
+      },
+      {
+        "width": 2560,
+        "height": 1440
+      },
+      {
+        "width": 2560,
+        "height": 1080
+      },
+      {
+        "width": 3840,
+        "height": 2160
+      }
+    ];
+    var factors = {};
+    resolutions.forEach(function(resolution) {
+      factors[resolution.width + "x" + resolution.height] = {
+        width: resolution.width,
+        height: resolution.height,
+        ratio: resolution.width / resolution.height
+      };
+    });
 
-      var factors = {};
-      resolutions.forEach(function(resolution) {
-        factors[resolution.width + "x" + resolution.height] = {
-          width: resolution.width,
-          height: resolution.height,
-          ratio: resolution.width/resolution.height
-        };
+    function show_text() {
+      document.getElementById("text").style.visibility = 'visible';
+      document.getElementById("video").style.visibility = 'hidden';
+    }
+
+    function show_video() {
+      document.getElementById("text").style.visibility = 'hidden';
+      document.getElementById("video").style.visibility = 'visible';
+    }
+
+    function add_DPI() {
+      var new_dpi = Number(document.getElementById("dpi").value) + 100;
+      document.getElementById("dpi").value = new_dpi;
+    }
+
+    function minus_DPI() {
+      var new_dpi = Number(document.getElementById("dpi").value) - 100;
+      document.getElementById("dpi").value = new_dpi;
+    }
+
+    function add_IGS() {
+      var new_IGS = Number(document.getElementById("sensitivity").value) + 1;
+      document.getElementById("sensitivity").value = new_IGS;
+    }
+
+    function minus_IGS() {
+      var new_IGS = Number(document.getElementById("sensitivity").value) - 1;
+      document.getElementById("sensitivity").value = new_IGS;
+    }
+
+    function add_FOV() {
+      var new_FOV = Number(document.getElementById("fov").value) + 1;
+      document.getElementById("fov").value = new_FOV;
+    }
+
+    function minus_FOV() {
+      var new_FOV = Number(document.getElementById("fov").value) - 1;
+      document.getElementById("fov").value = new_FOV;
+    }
+
+    function createOutputs() {
+      var outputs = document.getElementById("outputs");
+      Object.keys(factors).forEach(function(resolution) {
+        var label = document.createElement("label");
+        label.innerHTML = "Pixel/degree @ " + resolution + " <input id=" + resolution + " type=text readonly disabled/>"
+        outputs.appendChild(label);
       });
+    }
 
-      function createOutputs() {
-        var outputs = document.getElementById("outputs");
-        Object.keys(factors).forEach(function(resolution) {
-          var label = document.createElement("label");
-          label.innerHTML = "Pixel/degree @ " + resolution + " <input id=" + resolution + " type=text readonly disabled/>"
-          outputs.appendChild(label);
-        });
-      }
+    function roundTwoPlaces(number) {
+      return Math.round(100 * number) / 100;
+    }
 
-      function roundTwoPlaces(number) {
-        return Math.round(100 * number) / 100;
-      }
+    function calculate() {
+      var dpi = Number(document.getElementById("dpi").value);
+      var sensitivity = Number(document.getElementById("sensitivity").value);
+      var fov = Number(document.getElementById("fov").value);
+      var inchp360 = (360 * 10 / 3) / (dpi * sensitivity * 0.022);
+      var cmp360 = 2.54 * inchp360;
+      var rawdotpdeg = dpi * inchp360 / 360;
+      var dotpdeg = rawdotpdeg / 2;
+      var eDPI = dpi * sensitivity;
+      document.getElementById("eDPI").value = roundTwoPlaces(eDPI);
+      document.getElementById("inchp360").value = roundTwoPlaces(inchp360);
+      document.getElementById("cmp360").value = roundTwoPlaces(cmp360);
+      document.getElementById("rawdotpdeg").value = roundTwoPlaces(rawdotpdeg);
+      document.getElementById("dotpdeg").value = roundTwoPlaces(dotpdeg);
+      Object.keys(factors).forEach(function(resolution) {
+        var factor = factors[resolution];
+        var pixeldeg = factor.ratio * factor.height / fov;
+        var output = document.getElementById(resolution);
+        output.value = roundTwoPlaces(pixeldeg);
+        output.className = (pixeldeg > dotpdeg) ? "error" : "pass";
+      });
+    }
+    createOutputs();
+    calculate();
+  </script>
+</body>
 
-      function calculate() {
-        var dpi = Number(document.getElementById("dpi").value);
-        var sensitivity = Number(document.getElementById("sensitivity").value);
-        var fov = Number(document.getElementById("fov").value);
-
-        var inchp360 = (360 * 10 / 3) / (dpi * sensitivity * 0.022);
-        var cmp360 = 2.54 * inchp360;
-        var rawdotpdeg = dpi * inchp360 / 360;
-        var dotpdeg = rawdotpdeg / 2;
-
-        document.getElementById("inchp360").value = roundTwoPlaces(inchp360);
-        document.getElementById("cmp360").value = roundTwoPlaces(cmp360);
-        document.getElementById("rawdotpdeg").value = roundTwoPlaces(rawdotpdeg);
-        document.getElementById("dotpdeg").value = roundTwoPlaces(dotpdeg);
-
-        Object.keys(factors).forEach(function(resolution) {
-          var factor = factors[resolution];
-          var pixeldeg = factor.ratio * factor.height / fov;
-
-          var output = document.getElementById(resolution);
-          output.value = roundTwoPlaces(pixeldeg);
-          output.className = (pixeldeg > dotpdeg) ? "error" : "pass";
-        });
-      }
-
-      createOutputs();
-      calculate();
-    </script>
-  </body>
 </html>
